@@ -1,0 +1,42 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build output
+/bin/
+/dist/
+/build/
+/out/
+
+# Test binary (`go test -c`)
+*.test
+
+# Coverage
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Air (live reload) temp
+tmp/
+
+# Env and secrets (adjust if you commit example env files only)
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+*.swp
+*.swo
+*~
+
+# Debug / delve
+__debug_bin*
