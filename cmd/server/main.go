@@ -14,11 +14,13 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/sriraghariharan/leaf-fanout-service/internal/db"
+	"github.com/sriraghariharan/leaf-fanout-service/internal/rabbitmq"
 )
 
 func main() {
 	loadDotEnv()
 
+	//connect to database
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
@@ -30,6 +32,15 @@ func main() {
 		if err := db.Close(); err != nil {
 			log.Printf("database close: %v", err)
 		}
+	}()
+
+	//connect to rabbitmq
+	err = rabbitmq.ConnectRabbitMQ()
+	if err != nil {
+		log.Fatalf("rabbitmq: %v", err)
+	}
+	defer func() {
+		rabbitmq.CloseRabbitMQ()
 	}()
 
 	fmt.Println("Hello, Welcome to the Fanout Service!")
