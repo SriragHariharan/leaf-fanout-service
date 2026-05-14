@@ -15,6 +15,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/sriraghariharan/leaf-fanout-service/internal/db"
 	"github.com/sriraghariharan/leaf-fanout-service/internal/kafka"
+	"github.com/sriraghariharan/leaf-fanout-service/internal/kafka/consumers"
 )
 
 func main() {
@@ -42,6 +43,8 @@ func main() {
 	defer func() {
 		kafka.CloseKafka()
 	}()
+
+	consumers.RunConsumers(ctx, "fanout-service-posts")
 
 	fmt.Println("Hello, Welcome to the Fanout Service!")
 

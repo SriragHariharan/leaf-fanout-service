@@ -1,9 +1,3 @@
-// Package kafka exposes the process-wide bootstrap broker list and a shared
-// Kafka producer (Writer). Call Connect once at startup, defer Close at
-// shutdown, then read Brokers / Writer from anywhere in the service.
-//
-// Consumers (kafka.Reader) are per-topic and per-consumer-group, so callers
-// create them where needed using the Brokers slice.
 package kafka
 
 import (
@@ -38,12 +32,21 @@ func ConnectKafka() error {
 		return fmt.Errorf("%s must contain at least one host:port", envKafkaBrokers)
 	}
 
+	/*
+		* Startup connectivity check
+		* Like a health check for the kafka broker
+		* Fail fast if the broker is not reachable
+	*/
 	conn, err := kgo.Dial("tcp", Brokers[0])
 	if err != nil {
 		return fmt.Errorf("dial kafka: %w", err)
 	}
 	_ = conn.Close()
 
+	/*
+		* Create a writer aka producer for the topic "posts"
+		* this will be used to send messages to the kafka broker
+	*/
 	Writer = &kgo.Writer{
 		Addr:     kgo.TCP(Brokers...),
 		Balancer: &kgo.Hash{},
@@ -61,7 +64,10 @@ func CloseKafka() {
 	}
 }
 
-
+/*
+	* Split the brokers string into a slice of strings
+	* Each string is a broker host:port
+*/
 func splitBrokers(s string) []string {
 	parts := strings.Split(s, ",")
 	out := parts[:0]
