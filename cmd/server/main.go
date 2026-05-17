@@ -16,6 +16,8 @@ import (
 	"github.com/sriraghariharan/leaf-fanout-service/internal/db"
 	"github.com/sriraghariharan/leaf-fanout-service/internal/kafka"
 	"github.com/sriraghariharan/leaf-fanout-service/internal/kafka/consumers"
+	"github.com/sriraghariharan/leaf-fanout-service/internal/repo"
+	"github.com/sriraghariharan/leaf-fanout-service/internal/service"
 )
 
 func main() {
@@ -44,7 +46,10 @@ func main() {
 		kafka.CloseKafka()
 	}()
 
-	consumers.RunConsumers(ctx, "fanout-service-posts")
+	postRepo := repo.NewPostRepo(db.DB)
+	fanoutRepo := repo.NewFanoutRepo(db.DB)
+	fanoutSvc := service.NewService(postRepo, fanoutRepo)
+	consumers.RunConsumers(ctx, "fanout-service-posts", fanoutSvc)
 
 	fmt.Println("Hello, Welcome to the Fanout Service!")
 
