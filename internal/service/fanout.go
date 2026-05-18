@@ -48,6 +48,35 @@ func (s *FanoutService) ProcessPostCreated(ctx context.Context, in PostCreatedIn
 	return nil
 }
 
+func (s *FanoutService) ProcessPostEdited(ctx context.Context, in PostEditedInput) error {
+	postID := strings.TrimSpace(in.PostID)
+	ownerID := strings.TrimSpace(in.OwnerID)
+	content := strings.TrimSpace(in.Content)
+	if postID == "" || ownerID == "" || content == "" {
+		return fmt.Errorf("postID, ownerID, and content are required")
+	}
+
+	if err := s.postRepo.UpdatePost(ctx, postID, content, in.MediaURL); err != nil {
+		return fmt.Errorf("update post: %w", err)
+	}
+	return nil
+}
+
+func (s *FanoutService) ProcessPostDeleted(ctx context.Context, postID string) error {
+	postID = strings.TrimSpace(postID)
+	if postID == "" {
+		return fmt.Errorf("postID is required")
+	}
+
+	if err := s.fanoutRepo.DeleteFeedsByPostID(ctx, postID); err != nil {
+		return fmt.Errorf("delete feeds: %w", err)
+	}
+	if err := s.postRepo.DeletePost(ctx, postID); err != nil {
+		return fmt.Errorf("delete post: %w", err)
+	}
+	return nil
+}
+
 func (s *FanoutService) fanoutToFriends(ctx context.Context, postID, authorID string) error {
 	friendIDs, err := friends.FetchTopFriendIDs(ctx, authorID)
 	if err != nil {

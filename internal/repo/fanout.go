@@ -73,3 +73,9 @@ func (r *FanoutRepo) WriteTimelines(ctx context.Context, authorID, postID string
 
 	return r.db.WithContext(ctx).CreateInBatches(batch, insertBatchSize).Error
 }
+
+func (r *FanoutRepo) DeleteFeedsByPostID(ctx context.Context, postID string) error {
+	return r.db.WithContext(ctx).
+		Where("post_id = ?", postID).
+		Delete(&models.Feed{}).Error
+}

@@ -58,8 +58,11 @@ func main() {
 	router := mux.NewRouter()
 	//routes
 	router.HandleFunc("/test", testHandler).Methods("GET")
-	//start the server
-	log.Fatal(http.ListenAndServe(":4041", router))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "2005"
+	}
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
 
 //test handler

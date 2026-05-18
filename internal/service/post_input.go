@@ -7,3 +7,11 @@ type PostCreatedInput struct {
 	MediaURL string // empty string when there is no image
 	OwnerID  string
 }
+
+// PostEditedInput is the data needed to update a post in feed_posts.
+type PostEditedInput struct {
+	PostID   string
+	Content  string
+	MediaURL string
+	OwnerID  string
+}
