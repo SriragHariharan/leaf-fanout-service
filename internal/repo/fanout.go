@@ -22,7 +22,7 @@ func NewFanoutRepo(db *gorm.DB) *FanoutRepo {
 	return &FanoutRepo{db: db}
 }
 
-// WriteTimelines inserts feed_feeds rows for each friend who does not already have this post.
+// WriteTimelines inserts feed_feeds rows for each recipient (viewer) who does not already have this post.
 func (r *FanoutRepo) WriteTimelines(ctx context.Context, authorID, postID string, friendIDs []string) error {
 	if len(friendIDs) == 0 {
 		return nil

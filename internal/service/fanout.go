@@ -83,7 +83,8 @@ func (s *FanoutService) fanoutToFriends(ctx context.Context, postID, authorID st
 		return fmt.Errorf("fetch friend ids: %w", err)
 	}
 
-	if err := s.fanoutRepo.WriteTimelines(ctx, authorID, postID, friendIDs); err != nil {
+	recipientIDs := append([]string{authorID}, friendIDs...)
+	if err := s.fanoutRepo.WriteTimelines(ctx, authorID, postID, recipientIDs); err != nil {
 		return fmt.Errorf("write timelines: %w", err)
 	}
 	return nil
