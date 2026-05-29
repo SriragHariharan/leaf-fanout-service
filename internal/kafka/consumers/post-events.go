@@ -19,6 +19,7 @@ func NewPostEventsReader(consumerGroupID string) *kgo.Reader {
 		Brokers: kafka.Brokers,
 		Topic:   PostEventsTopic,
 		GroupID: consumerGroupID,
+		Dialer:  kafka.Dialer,
 	})
 }
 
