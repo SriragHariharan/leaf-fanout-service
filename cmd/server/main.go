@@ -49,20 +49,31 @@ func main() {
 	postRepo := repo.NewPostRepo(db.DB)
 	fanoutRepo := repo.NewFanoutRepo(db.DB)
 	fanoutSvc := service.NewService(postRepo, fanoutRepo)
-	consumers.RunConsumers(ctx, "fanout-service-posts", fanoutSvc)
+
+	// Start Kafka consumers in background
+	go func() {
+		log.Println("Starting Kafka consumers...")
+		consumers.RunConsumers(ctx, "fanout-service-posts", fanoutSvc)
+	}()
 
 	fmt.Println("Hello, Welcome to the Fanout Service!")
 
-	
-	//gorilla mux router
 	router := mux.NewRouter()
-	//routes
-	router.HandleFunc("/test", testHandler).Methods("GET")
+	router.HandleFunc("/test", testHandler).Methods(http.MethodGet)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "2005"
 	}
-	log.Fatal(http.ListenAndServe(":"+port, router))
+
+	log.Printf("HTTP server starting on port %s", port)
+
+	srv := &http.Server{
+		Addr:    ":" + port,
+		Handler: router,
+	}
+
+	log.Fatal(srv.ListenAndServe())
 }
 
 //test handler

@@ -5,6 +5,9 @@
 *.so
 *.dylib
 
+# certificates
+ca.pem
+
 # Build output
 /bin/
 /dist/
